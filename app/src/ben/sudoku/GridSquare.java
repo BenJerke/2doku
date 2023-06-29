@@ -33,12 +33,8 @@ public class GridSquare {
         this.isStartingSquare = true;
     }
 
-    public void setValue(int value) throws GameException {
-        if (!isStartingSquare) {
+    public void setValue(int value) {
             this.value = value;
-        } else {
-            throw new GameException ("This is a starting square - can't update it.");
-        }
     }
 
 

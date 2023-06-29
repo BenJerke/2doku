@@ -10,7 +10,9 @@ public class Main {
         int gridSize = Integer.parseInt(userInput.nextLine());
         Game game = new Game(gridSize);
         // call the game generator here
-
+        if(gridSize == 3){
+            game.hardcoded9x9Game();
+        }
 
         boolean keepPlaying = true;
         while (keepPlaying){

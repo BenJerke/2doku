@@ -1,9 +1,6 @@
 package ben.sudoku;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.lang.Math;
 
 public class Game {
@@ -100,7 +97,7 @@ public class Game {
         colsRowsBoxes.add(findColumnMembers(square));
         colsRowsBoxes.add(findBoxMembers(square));
         for (List<GridSquare> list : colsRowsBoxes){
-            if (getValuesFromListOfSquares(list).contains(proposedValue)){
+            if (getValuesFromListOfSquares(list).contains(proposedValue) || square.isStartingSquare()){
                 return false;
             }
         }
@@ -173,7 +170,90 @@ public class Game {
         return valueList;
     }
 
+    // fill the grid in a valid way
+    // remove a bunch of numbers.
+    // and then it's a sudoku?
+    // hopefully
+    public void makeGame() {
+        // loop through all the squares in the game
+        // try setting a random value in each of 'em
+        List<GridSquare> squares = this.getSquares();
 
+        for (GridSquare square : squares) {
+            // add a random number to the square.
+            // if the update isn't valid, try a different random number.
+            // do this until each square has a value.
+            while (square.getValue() == 0){
+                // checking for zero here should do the trick. it'll be zero until we get the number right.
+                // might run the risk of going infinite; since we can't backtrack...
+                // ...yet.
+                // or it'll just take forever. and randomly take forever.
+                // let's try writing a method that adds a random allowable value instead of just a random value.
+                // we may also need the "grid is solveable" function now.
+                int randomNumber = getRandomNumberWithinValueRange(this.squareGridSize());
+                if(this.updateIsValid(square, randomNumber)){
+                    square.setValue(randomNumber);
+                }
+            }
+        }
+        // once we've filled the grid, we need to remove a number of values.
+        // let's hardcode it to some portion of the grid size for now.
+        // shuffle it first to randomize the order, then remove a third of 'em.
+        Collections.shuffle(squares);
+        for(int i = squares.size(); i > squares.size() / 3; i--){
+            squares.get(i).setValue(0);
+        }
+
+        // after the removals, we need to take the remaining squares and mark them as starters so they can't be changed by user input.
+        for (GridSquare square : squares){
+            if (square.getValue() != 0){
+                square.setStartingSquare();
+            }
+        }
+    }
+
+    private int getRandomNumberWithinValueRange(int max){
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - 1) + 1) + 1;
+        return randomNum;
+
+    }
+    public void updateSquareInListAndSetStarting (String proposedValue){
+        // parse input
+        int y = Integer.parseInt(proposedValue.charAt(0) + "");
+        int x = Integer.parseInt(proposedValue.charAt(2) + "");
+        int val = Integer.parseInt(proposedValue.charAt(4) + "");
+        // this is SUPER NOT IDEAL.
+        // but it is SUPER GOOD ENOUGH.
+        for (GridSquare square : squares){
+            int squareX = square.getXCoordinate();
+            int squareY = square.getYCoordinate();
+            if(y == squareY && x == squareX){
+                if(updateIsValid(square, val)){
+                    square.setValue(val);
+                    square.setStartingSquare();
+                }
+            }
+        }
+    }
+    public void hardcoded9x9Game(){
+        this.updateSquareInListAndSetStarting("1-4-8");
+        this.updateSquareInListAndSetStarting("1-6-1");
+        this.updateSquareInListAndSetStarting("2-7-4");
+        this.updateSquareInListAndSetStarting("3-1-5");
+        this.updateSquareInListAndSetStarting("4-5-7");
+        this.updateSquareInListAndSetStarting("4-7-8");
+        this.updateSquareInListAndSetStarting("5-7-1");
+        this.updateSquareInListAndSetStarting("6-2-2");
+        this.updateSquareInListAndSetStarting("6-5-3");
+        this.updateSquareInListAndSetStarting("7-1-6");
+        this.updateSquareInListAndSetStarting("7-8-7");
+        this.updateSquareInListAndSetStarting("7-9-5");
+        this.updateSquareInListAndSetStarting("8-3-3");
+        this.updateSquareInListAndSetStarting("8-3-4");
+        this.updateSquareInListAndSetStarting("9-4-2");
+        this.updateSquareInListAndSetStarting("9-7-6");
+    }
 
 
 }
