@@ -10,24 +10,16 @@ public class Game {
     private final static int GRID_SIZE_OFFSET = 1;
     private final static int ZERO = 0;
     private List<GridSquare> squares = new ArrayList<GridSquare>(); //sort this by row?
-    private Map<String, GridSquare> squaresMap = new HashMap<String, GridSquare>();
     private int gridSize; // this must be a square, or something that we then square.
     private int[] boundaries;
 
     public Game (int gridSize) {
-        // when we make the game, we gotta make squares.
-        // once we got the squares, we can put 'em in containers.
-        // make rows
         this.gridSize = gridSize;
         for (int i = 1; i < this.squareGridSize() + GRID_SIZE_OFFSET; i++) {
             // make the columns
             for(int j = 1; j < this.squareGridSize() + GRID_SIZE_OFFSET; j++){
                 squares.add(new GridSquare(j, i));
             }
-        }
-        for(GridSquare square : squares){
-            String key = square.getYCoordinate() + "-" + square.getXCoordinate();
-            squaresMap.put(key, square);
         }
         int gridBoundary = gridSize;
         this.boundaries = new int[gridSize];
@@ -66,24 +58,13 @@ public class Game {
                     && (colCount != this.squareGridSize())) {
                 System.out.print(" | ");
             }
-
-            System.out.print(square.getValue());
+            if (square.getValue() == 0) {
+                System.out.print(" ");
+            } else {
+                System.out.print(square.getValue());
+            }
             rowCount = square.getYCoordinate();
             colCount = square.getXCoordinate();
-        }
-    }
-    public void updateSquareInList (String key, int proposedValue){
-        // parse input
-        int y = Integer.parseInt(key.charAt(0) + "");
-        int x = Integer.parseInt(key.charAt(2) + "");
-        // this is SUPER NOT IDEAL.
-        // but it is SUPER GOOD ENOUGH.
-        for (GridSquare square : squares){
-            int squareX = square.getXCoordinate();
-            int squareY = square.getYCoordinate();
-            if(y == squareY && x == squareX){
-                square.setValue(proposedValue); //change this to the update function once she's ready for game time.
-            }
         }
     }
     public void updateSquareInList (String proposedValue){
@@ -98,7 +79,7 @@ public class Game {
             int squareY = square.getYCoordinate();
             if(y == squareY && x == squareX){
                 if(updateIsValid(square, val)){
-                    square.setValue(val); //change this to the update function once she's ready for game time.
+                    square.setValue(val);
                 }
             }
         }
@@ -112,6 +93,7 @@ public class Game {
 
         // We don't care about the current square, though.
         // I don't know if this approach accounts for resetting a square's current value.
+        // we have to check whether the square is a starter square too.
 
         List<List<GridSquare>> colsRowsBoxes = new ArrayList<List<GridSquare>>();
         colsRowsBoxes.add(findRowMembers(square));
@@ -119,12 +101,10 @@ public class Game {
         colsRowsBoxes.add(findBoxMembers(square));
         for (List<GridSquare> list : colsRowsBoxes){
             if (getValuesFromListOfSquares(list).contains(proposedValue)){
-                System.out.println("Looks like this value is already this square's row, column, or box. Try something else.");
                 return false;
             }
         }
         return true;
-
     }
     public List<GridSquare> findBoxMembers(GridSquare square){
         List<GridSquare> box = new ArrayList<GridSquare>();
@@ -146,7 +126,6 @@ public class Game {
                 box.add(currentSquare);
             }
         }
-
         return box;
     }
     public int findBoxUpperBoundary (int coordinate){
@@ -163,7 +142,6 @@ public class Game {
                 }
             }
         }
-
         return upperBoundary;
     }
     public List<GridSquare> findRowMembers (GridSquare square){

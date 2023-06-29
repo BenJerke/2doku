@@ -9,22 +9,24 @@ public class Main {
         System.out.println("What size of boxes do you want in your grid?");
         int gridSize = Integer.parseInt(userInput.nextLine());
         Game game = new Game(gridSize);
+        // call the game generator here
+
 
         boolean keepPlaying = true;
         while (keepPlaying){
             game.printGameGrid();
             System.out.println("\nPick a square and a value. (row, column, number)");
             String proposedValue = userInput.nextLine();
-            //game.updateIsValid()
-            game.updateSquareInList(proposedValue);
-            game.printGameGrid();
-            System.out.println("\nKeep playing?");
 
-            String input = userInput.nextLine();
-            if (!(input.equals("y"))){
-                System.out.println("\nSee ya!");
-                keepPlaying = false;
+            if (proposedValue.equalsIgnoreCase("q")){
+                System.out.println("See ya!");
+                break;
             }
+
+            game.updateSquareInList(proposedValue);
+            System.out.println();
+            System.out.println();
+            //game.printGameGrid();
         }
     }
 }
